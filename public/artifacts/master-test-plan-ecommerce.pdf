@@ -1,0 +1,46 @@
+# Master Test Plan - E-Commerce Platform
+
+## 1. Introduction
+This document outlines the comprehensive test strategy for the E-Commerce Platform serving 2M+ monthly users.
+
+## 2. Scope
+- Functional Testing: Checkout, Cart, Payment, User Management
+- Non-Functional: Performance, Security, Accessibility, Cross-browser
+- Regression Testing: Automated suite for continuous delivery
+
+## 3. Test Strategy
+### 3.1 Risk-Based Testing
+Priority areas based on business impact and technical complexity:
+- Critical: Payment processing, Order management
+- High: User authentication, Cart functionality
+- Medium: Product catalog, Search
+- Low: Static content, Footer links
+
+### 3.2 Test Levels
+- Unit Testing (Developer owned): 80%+ coverage target
+- Integration Testing: API contracts, Database interactions
+- System Testing: End-to-end user journeys
+- Acceptance Testing: Business stakeholder validation
+
+## 4. Entry/Exit Criteria
+### Entry:
+- Code deployed to test environment
+- Smoke tests passing
+- Test data prepared
+
+### Exit:
+- All critical/high severity bugs resolved
+- 95% test case pass rate
+- Performance benchmarks met
+- Security scan clean
+
+## 5. Resources
+- 4 QA Engineers (2 Automation, 2 Manual)
+- 1 Test Architect
+- 2 DevOps for environment management
+
+## 6. Schedule
+- Sprint 1-2: Test Planning & Framework Setup
+- Sprint 3-6: Feature Testing & Automation
+- Sprint 7: Regression & Performance
+- Sprint 8: UAT Support & Release

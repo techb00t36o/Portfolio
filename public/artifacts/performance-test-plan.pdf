@@ -1,0 +1,126 @@
+# Performance Test Plan & Results
+
+## 1. Test Objectives
+- Establish baseline performance metrics
+- Identify bottlenecks under load
+- Validate scalability requirements
+- Detect performance regressions
+
+## 2. Test Scenarios
+
+### 2.1 Baseline Test
+- **Users**: 100 concurrent
+- **Duration**: 10 minutes
+- **Goal**: Establish normal operation metrics
+- **Success Criteria**: 
+  - p95 < 500ms
+  - Error rate < 0.1%
+  - Throughput > 100 RPS
+
+### 2.2 Load Test
+- **Users**: 1,000 concurrent (ramp over 5 min)
+- **Duration**: 30 minutes
+- **Goal**: Validate expected production load
+- **Success Criteria**:
+  - p95 < 1000ms
+  - Error rate < 0.5%
+  - Throughput > 500 RPS
+
+### 2.3 Stress Test
+- **Users**: 3,000 concurrent (ramp over 10 min)
+- **Duration**: 20 minutes
+- **Goal**: Find breaking point
+- **Success Criteria**:
+  - Graceful degradation
+  - No data corruption
+  - Auto-scaling triggers
+
+### 2.4 Spike Test
+- **Users**: 500 → 5,000 → 500 (instant)
+- **Duration**: 10 minutes
+- **Goal**: Validate sudden traffic handling
+- **Success Criteria**:
+  - Recovery < 30 seconds
+  - No cascading failures
+  - Circuit breakers activate
+
+### 2.5 Soak Test
+- **Users**: 500 sustained
+- **Duration**: 8 hours
+- **Goal**: Detect memory leaks, resource exhaustion
+- **Success Criteria**:
+  - Memory stable
+  - No connection leaks
+  - Consistent response times
+
+## 3. Key Metrics to Monitor
+
+| Metric | Target | Alert Threshold |
+|--------|--------|-----------------|
+| Response Time (p50) | < 200ms | > 500ms |
+| Response Time (p95) | < 1000ms | > 2000ms |
+| Response Time (p99) | < 2000ms | > 5000ms |
+| Error Rate | < 0.1% | > 1% |
+| Throughput | > 500 RPS | < 100 RPS |
+| CPU Utilization | < 70% | > 85% |
+| Memory Utilization | < 75% | > 90% |
+| Database Connections | < 80% pool | > 95% pool |
+
+## 4. Sample Results (Load Test - 1000 Users)
+
+### Response Times
+| Endpoint | p50 | p95 | p99 | Max |
+|----------|-----|-----|-----|-----|
+| GET /products | 45ms | 180ms | 320ms | 890ms |
+| POST /cart | 65ms | 220ms | 410ms | 1.2s |
+| POST /checkout | 180ms | 650ms | 1.1s | 3.4s |
+| GET /orders | 55ms | 200ms | 380ms | 950ms |
+
+### System Resources
+- **CPU**: Avg 45%, Peak 68%
+- **Memory**: Avg 2.1GB, Peak 3.4GB
+- **Database CPU**: Avg 35%, Peak 55%
+- **Database Connections**: Avg 45, Peak 78
+- **Network I/O**: Avg 12 MB/s, Peak 45 MB/s
+
+### Errors Observed
+- 0.02% timeout errors on checkout (3rd party payment)
+- 0% application errors
+
+## 5. Bottleneck Analysis
+
+### Identified Bottlenecks
+1. **Checkout Service**: Synchronous payment processing
+   - *Impact*: p99 1.1s on checkout
+   - *Recommendation*: Async payment with webhook confirmation
+
+2. **Product Search**: Unindexed category filter
+   - *Impact*: 320ms p99 on product listing
+   - *Recommendation*: Add composite index on (category, price)
+
+3. **Order History**: N+1 query problem
+   - *Impact*: Linear degradation with order count
+   - *Recommendation*: Eager loading / batch fetching
+
+## 6. Optimization Recommendations
+
+### Quick Wins (1-2 days)
+- Enable response compression (gzip/brotli)
+- Add database connection pooling tuning
+- Implement query result caching for catalog
+
+### Medium Term (1-2 weeks)
+- Async payment processing
+- Database index optimization
+- CDN for static assets
+
+### Long Term (1+ months)
+- Microservice decomposition for checkout
+- Event-driven architecture
+- Edge computing for geo-distribution
+
+## 7. Regression Detection
+- Automated comparison with baseline (k6 thresholds)
+- Alert on > 10% p95 degradation
+- Alert on > 5% throughput decrease
+- Weekly trend analysis dashboard
