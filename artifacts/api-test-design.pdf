@@ -1,0 +1,37 @@
+# API Test Design Specification
+
+## 1. Overview
+Contract-driven API testing strategy for 15 microservices using Pact for consumer-driven contracts.
+
+## 2. Service Coverage Matrix
+| Service | Endpoints | Contract Tests | Integration Tests | Performance Tests |
+|---------|-----------|----------------|-------------------|-------------------|
+| User Service | 12 | 12 | 8 | 4 |
+| Order Service | 15 | 15 | 10 | 6 |
+| Payment Service | 8 | 8 | 6 | 4 |
+| Inventory Service | 10 | 10 | 7 | 3 |
+| Notification Service | 6 | 6 | 4 | 2 |
+
+## 3. Authentication Flows
+- JWT Bearer Token validation
+- OAuth 2.0 Authorization Code flow
+- API Key authentication for internal services
+- mTLS for service-to-service communication
+
+## 4. Test Data Strategy
+- Synthetic test data generation per service
+- Database seeding scripts for integration tests
+- Contract test data isolated per provider/consumer pair
+- PII-free datasets for all environments
+
+## 5. Contract Testing Approach
+- Consumer-driven contracts with Pact
+- Provider verification in CI pipeline
+- Contract publishing to Pact Broker
+- Canary deployment with contract validation
+
+## 6. Test Execution
+- Unit/Contract tests: Every PR (2-3 min)
+- Integration tests: Nightly (15 min)
+- Performance tests: Weekly (30 min)
+- Contract compatibility: On every deploy

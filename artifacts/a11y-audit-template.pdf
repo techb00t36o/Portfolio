@@ -1,0 +1,152 @@
+# Accessibility Audit Report Template
+
+## 1. Executive Summary
+- **Project**: [Project Name]
+- **Audit Date**: [Date]
+- **Auditor**: [Name]
+- **Scope**: [Pages/Components tested]
+- **Standard**: WCAG 2.1 Level AA
+- **Overall Compliance**: [Compliant / Non-Compliant / Partially Compliant]
+
+## 2. Methodology
+- Automated testing: axe-core, Lighthouse
+- Manual testing: Keyboard navigation, Screen readers (NVDA, VoiceOver)
+- Tools: WAVE, Color Contrast Analyser, Accessibility Insights
+
+## 3. Summary of Findings
+
+| WCAG Principle | Guideline | Pass | Fail | N/A | Total |
+|----------------|-----------|------|------|-----|-------|
+| Perceivable | 1.1 - 1.4 | 12 | 3 | 2 | 17 |
+| Operable | 2.1 - 2.5 | 15 | 2 | 1 | 18 |
+| Understandable | 3.1 - 3.3 | 8 | 1 | 2 | 11 |
+| Robust | 4.1 | 5 | 0 | 0 | 5 |
+| **Total** | | **40** | **6** | **5** | **51** |
+
+## 4. Detailed Findings
+
+### Critical (Must Fix - Blocks Access)
+| ID | Component | WCAG | Issue | Impact | Recommendation |
+|----|-----------|------|-------|--------|----------------|
+| A11Y-001 | Checkout Form | 1.3.1 | Form labels not programmatically associated | Screen reader users cannot identify fields | Add `<label for="id">` or `aria-label` |
+| A11Y-002 | Modal Dialog | 2.4.3 | Focus not trapped in modal | Keyboard users can tab outside modal | Implement focus trap |
+| A11Y-003 | Color Status | 1.4.1 | Error states use color only | Colorblind users cannot distinguish | Add icons/text indicators |
+
+### High (Should Fix - Significant Barrier)
+| ID | Component | WCAG | Issue | Impact | Recommendation |
+|----|-----------|------|-------|--------|----------------|
+| A11Y-004 | Navigation | 2.4.7 | Focus indicator missing on custom buttons | Keyboard users lose focus visibility | Add visible focus styles |
+| A11Y-005 | Data Table | 1.3.1 | Table headers not associated with cells | Screen reader users cannot understand data | Use `<th scope="col">` |
+
+### Medium (Should Fix - Moderate Barrier)
+| ID | Component | WCAG | Issue | Impact | Recommendation |
+|----|-----------|------|-------|--------|----------------|
+| A11Y-006 | Carousel | 2.2.2 | Auto-advancing carousel cannot be paused | Users with cognitive disabilities cannot read content | Add pause/play controls |
+
+## 5. Automated Test Results
+
+### axe-core Violations
+```
+Violations: 6
+Passes: 142
+Incomplete: 12
+Inapplicable: 234
+```
+
+### Lighthouse Accessibility Score: 92/100
+
+## 6. Manual Testing Results
+
+### Keyboard Navigation
+- [x] All interactive elements reachable
+- [x] Logical tab order
+- [x] Focus visible on all elements
+- [ ] Skip links present (Homepage only)
+- [x] No keyboard traps
+
+### Screen Reader (NVDA/VoiceOver)
+- [x] Page title announced
+- [x] Headings hierarchy correct
+- [x] Form labels announced
+- [x] Button/link purposes clear
+- [ ] Live regions for dynamic content
+- [x] Images have alt text
+
+### Zoom & Resize
+- [x] 200% zoom functional
+- [x] 400% zoom functional (horizontal scroll only)
+- [x] Text spacing override works
+- [x] No content loss at 400%
+
+## 7. Color Contrast Analysis
+
+| Element | Foreground | Background | Ratio | AA Normal | AA Large | AAA Normal | AAA Large |
+|---------|------------|------------|-------|-----------|----------|------------|-----------|
+| Primary Button | #FFFFFF | #2563EB | 4.8:1 | ✓ | ✓ | ✗ | ✓ |
+| Secondary Button | #1E40AF | #DBEAFE | 7.2:1 | ✓ | ✓ | ✓ | ✓ |
+| Error Text | #DC2626 | #FFFFFF | 5.1:1 | ✓ | ✓ | ✗ | ✓ |
+| Disabled Text | #9CA3AF | #FFFFFF | 2.8:1 | ✗ | ✗ | ✗ | ✗ |
+| Body Text | #1F2937 | #FFFFFF | 13.8:1 | ✓ | ✓ | ✓ | ✓ |
+
+## 8. Remediation Priority Matrix
+
+| Priority | Criteria | Timeline | Count |
+|----------|----------|----------|-------|
+| **P0 - Critical** | Blocks access, legal risk | Immediate (1-2 days) | 3 |
+| **P1 - High** | Significant barrier, affects many users | 1 week | 2 |
+| **P2 - Medium** | Moderate barrier, workaround exists | 2 weeks | 1 |
+| **P3 - Low** | Minor issue, enhancement | Next sprint | 0 |
+
+## 9. Developer Fix Guidelines
+
+### A11Y-001: Form Labels
+```jsx
+// ❌ Before
+<input id="email" type="email" placeholder="Email" />
+
+// ✅ After
+<label htmlFor="email">Email Address</label>
+<input id="email" type="email" />
+
+// Or with aria-label
+<input id="email" type="email" aria-label="Email Address" />
+```
+
+### A11Y-002: Focus Trap
+```jsx
+// Use focus-trap-react or implement:
+useEffect(() => {
+  const handleKeyDown = (e) => {
+    if (e.key === 'Tab') {
+      // Trap focus within modal
+    }
+  };
+  document.addEventListener('keydown', handleKeyDown);
+  return () => document.removeEventListener('keydown', handleKeyDown);
+}, []);
+```
+
+### A11Y-003: Color-Independent Status
+```jsx
+// ❌ Before - Color only
+<div className="text-red-500">Error: Invalid email</div>
+
+// ✅ After - Icon + Text + Color
+<div className="flex items-center text-red-500" role="alert">
+  <AlertCircle className="w-4 h-4 mr-2" aria-hidden="true" />
+  <span>Error: Invalid email address</span>
+</div>
+```
+
+## 10. Re-test Plan
+- Re-test all P0/P1 issues after fix
+- Regression test related components
+- Run automated suite again
+- Manual verification with screen readers
+- Update compliance status
+
+## 11. Sign-off
+- **Developer**: [Name] / [Date]
+- **QA Lead**: [Name] / [Date]
+- **Product Owner**: [Name] / [Date]
+- **Accessibility Champion**: [Name] / [Date]
